@@ -23,10 +23,11 @@ def _required_env(name: str) -> str:
 def get_supabase_client(role: SupabaseKeyRole = "service"):
     """Return a cached Supabase client for backend database operations."""
 
-    from supabase import Client, create_client
-
     url = _required_env("SUPABASE_URL")
     key_name = "SUPABASE_SERVICE_KEY" if role == "service" else "SUPABASE_ANON_KEY"
     key = _required_env(key_name)
+
+    from supabase import Client, create_client
+
     client: Client = create_client(url, key)
     return client
