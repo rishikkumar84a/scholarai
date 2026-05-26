@@ -75,6 +75,7 @@ def test_client_factory_caches_by_role(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_invalid_role_raises_config_error(monkeypatch: pytest.MonkeyPatch) -> None:
     supabase_client.get_supabase_client.cache_clear()
     monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_KEY", "service-key")
 
     with pytest.raises(supabase_client.SupabaseConfigError, match="Invalid Supabase key role"):
         supabase_client.get_supabase_client("invalid-role")  # type: ignore[arg-type]
