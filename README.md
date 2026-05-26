@@ -54,13 +54,22 @@ FastAPI backend
 
 Copy the relevant `.env.example` files and fill in local values. Never commit real secrets.
 
+- Root template: `.env.example`
+- Backend template: `backend/.env.example`
+- Frontend template: `frontend/.env.example`
+
 ## Installation & Local Setup
 
-Setup instructions will be expanded as the frontend and backend are implemented.
+```bash
+git clone https://github.com/rishikkumar84a/scholarai.git
+cd scholarai
+```
+
+Backend and frontend install commands will be added when those workspaces are scaffolded.
 
 ## Running Tests
 
-Test commands will be added with the frontend and backend test suites.
+Backend and frontend test commands will be added with their test suites.
 
 ## API Documentation
 
