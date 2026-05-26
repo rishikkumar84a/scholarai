@@ -63,13 +63,20 @@ Copy the relevant `.env.example` files and fill in local values. Never commit re
 ```bash
 git clone https://github.com/rishikkumar84a/scholarai.git
 cd scholarai
+python -m pip install -r backend/requirements.txt
 ```
 
-Backend and frontend install commands will be added when those workspaces are scaffolded.
+Apply `backend/db/schema.sql` in the Supabase SQL editor or through the Supabase CLI after creating a project. The schema enables pgvector, creates the MVP tables, and adds a scholarship vector search function.
+
+Frontend install commands will be added when that workspace is scaffolded.
 
 ## Running Tests
 
-Backend and frontend test commands will be added with their test suites.
+```bash
+python -m pytest backend/tests
+```
+
+Frontend test commands will be added with the frontend test suite.
 
 ## API Documentation
 
