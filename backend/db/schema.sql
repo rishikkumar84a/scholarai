@@ -26,6 +26,11 @@ create table if not exists public.scholarships (
 
 alter table public.scholarships enable row level security;
 
+create policy "Scholarships are publicly readable"
+  on public.scholarships
+  for select
+  using (true);
+
 create table if not exists public.papers (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
