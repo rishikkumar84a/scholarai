@@ -1,4 +1,5 @@
 create extension if not exists vector with schema extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.users (
   id uuid primary key,
@@ -108,5 +109,6 @@ as $$
 $$;
 
 grant select on public.scholarships to anon, authenticated;
+grant all on public.scholarships to service_role;
 grant all on public.users, public.papers, public.applications, public.research_plans to service_role;
 grant execute on function public.match_scholarships(extensions.vector, int) to authenticated, service_role;
