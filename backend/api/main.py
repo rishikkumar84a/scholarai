@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.api.routes.profile import router as profile_router
 from backend.api.routes.scholarships import router as scholarships_router
+from backend.api.routes.papers import router as papers_router
 
 app = FastAPI(
     title="ScholarAI API",
@@ -29,6 +30,7 @@ app.add_middleware(
 # ── Route registration ──────────────────────────────────────────────
 app.include_router(profile_router, prefix="/api/profile", tags=["Profile"])
 app.include_router(scholarships_router, prefix="/api/scholarships", tags=["Scholarships"])
+app.include_router(papers_router, prefix="/api/papers", tags=["Papers"])
 
 
 @app.get("/health", tags=["Health"])
