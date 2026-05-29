@@ -1,7 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { RoadmapTimeline, RoadmapTask } from "@/components/RoadmapTimeline";
 import { describe, it, expect, vi } from "vitest";
-import userEvent from "@testing-library/user-event";
 
 const dummyTasks: RoadmapTask[] = [
   {
@@ -37,12 +36,12 @@ describe("RoadmapTimeline", () => {
     expect(screen.getByText("Submit Application")).toBeInTheDocument();
   });
 
-  it("calls onTaskClick when a task is clicked", async () => {
+  it("calls onTaskClick when a task is clicked", () => {
     const handleClick = vi.fn();
     render(<RoadmapTimeline tasks={dummyTasks} onTaskClick={handleClick} />);
 
     const taskElement = screen.getByText("Draft SOP");
-    await userEvent.click(taskElement);
+    fireEvent.click(taskElement);
 
     expect(handleClick).toHaveBeenCalledWith("2");
   });
