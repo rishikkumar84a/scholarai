@@ -6,7 +6,9 @@ import { LogIn, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export default function LoginPage() {
+import { Suspense } from "react";
+
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
@@ -81,5 +83,17 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
