@@ -13,6 +13,7 @@ from backend.api.routes.papers import router as papers_router
 from backend.api.routes.sop import router as sop_router
 from backend.api.routes.roadmap import router as roadmap_router
 from backend.api.routes.research_plan import router as research_plan_router
+from backend.api.routes.resume import router as resume_router
 
 app = FastAPI(
     title="ScholarAI API",
@@ -37,6 +38,7 @@ app.include_router(papers_router, prefix="/api/papers", tags=["Papers"])
 app.include_router(sop_router, prefix="/api/sop", tags=["SOP"])
 app.include_router(roadmap_router, prefix="/api/roadmap", tags=["Roadmap"])
 app.include_router(research_plan_router, prefix="/api/research-plan", tags=["Research Plan"])
+app.include_router(resume_router, prefix="/api/resume", tags=["Resume"])
 
 
 @app.get("/health", tags=["Health"])
