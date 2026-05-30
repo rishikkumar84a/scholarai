@@ -53,7 +53,7 @@ export default function ResumePage() {
       formData.append("file", file);
 
       // POST to the FastAPI resume analysis endpoint
-      const response = await api.post("/api/resume/analyze", formData);
+      const response = await api.upload("/api/resume/analyze", formData);
       setAnalysis(response as ResumeAnalysis);
     } catch {
       // Fallback to dummy data until backend is available
