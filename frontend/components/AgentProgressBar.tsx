@@ -1,96 +1,106 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
-import { Loader2, Bot, CheckCircle2, X } from "lucide-react";
+import { Loader2, Bot, CheckCircle2, Circle, X } from "lucide-react";
 
-export type AgentStatus = "idle" | "running" | "completed" | "error";
-
-export interface AgentTask {
-  id: string;
-  name: string;
-  status: AgentStatus;
-  progress: number; // 0 to 100
+export interface AgentStep {
+  label: string;
 }
 
-// Global state or context could be used here. For now, we simulate an active task.
-export function AgentProgressBar() {
-  const [activeTask, setActiveTask] = useState<AgentTask | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+interface AgentProgressBarProps {
+  /** Ordered list of steps the agent will execute. */
+  steps: AgentStep[];
+  /** Zero-based index of the step currently running. Set to steps.length when all steps are done. */
+  currentStep: number;
+  /** Optional callback to dismiss / hide the widget. */
+  onDismiss?: () => void;
+  className?: string;
+}
 
-  // Demo: simulate an agent task starting shortly after mount
-  useEffect(() => {
-    const startTimer = setTimeout(() => {
-      setActiveTask({
-        id: "demo-task",
-        name: "Summarizing 5 papers...",
-        status: "running",
-        progress: 10,
-      });
-      setIsVisible(true);
-    }, 5000);
-
-    return () => clearTimeout(startTimer);
-  }, []);
-
-  // Demo: simulate progress
-  useEffect(() => {
-    if (!activeTask || activeTask.status !== "running") return;
-
-    const progressInterval = setInterval(() => {
-      setActiveTask((prev) => {
-        if (!prev) return prev;
-        const nextProgress = prev.progress + Math.floor(Math.random() * 15);
-        if (nextProgress >= 100) {
-          clearInterval(progressInterval);
-          return { ...prev, progress: 100, status: "completed" };
-        }
-        return { ...prev, progress: nextProgress };
-      });
-    }, 1500);
-
-    return () => clearInterval(progressInterval);
-  }, [activeTask?.status]);
-
-  if (!isVisible || !activeTask) return null;
+/**
+ * Renders a floating progress widget showing which step an AI agent is on.
+ * Import this only on pages where an agent is actively running
+ * (e.g. scholarship matcher, paper summarizer).
+ */
+export function AgentProgressBar({
+  steps,
+  currentStep,
+  onDismiss,
+  className,
+}: AgentProgressBarProps) {
+  const isComplete = currentStep >= steps.length;
+  const progressPercent =
+    steps.length > 0 ? Math.min((currentStep / steps.length) * 100, 100) : 0;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-80 bg-card border border-border rounded-xl shadow-lg overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
+    <div
+      className={cn(
+        "fixed bottom-6 right-6 z-50 w-80 bg-card border border-border rounded-xl shadow-lg overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-300",
+        className
+      )}
+    >
       <div className="p-4">
+        {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Bot className="w-5 h-5 text-primary" />
-            <span className="font-semibold text-sm">Agent Activity</span>
+            <span className="font-semibold text-sm">
+              {isComplete ? "Agent Complete" : "Agent Running"}
+            </span>
           </div>
-          <button
-            onClick={() => setIsVisible(false)}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="flex items-center justify-between text-sm mb-2">
-          <span className="text-muted-foreground line-clamp-1 flex-1 mr-2">
-            {activeTask.name}
-          </span>
-          {activeTask.status === "running" && (
-            <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
-          )}
-          {activeTask.status === "completed" && (
-            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+          {onDismiss && (
+            <button
+              onClick={onDismiss}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Dismiss agent progress"
+            >
+              <X className="w-4 h-4" />
+            </button>
           )}
         </div>
 
-        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+        {/* Progress bar */}
+        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-4">
           <div
             className={cn(
               "h-full transition-all duration-500 ease-out",
-              activeTask.status === "completed" ? "bg-green-500" : "bg-primary"
+              isComplete ? "bg-green-500" : "bg-primary"
             )}
-            style={{ width: `${activeTask.progress}%` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
+
+        {/* Step list */}
+        <ul className="space-y-2">
+          {steps.map((step, idx) => {
+            const isDone = idx < currentStep;
+            const isActive = idx === currentStep && !isComplete;
+
+            return (
+              <li key={idx} className="flex items-center gap-2 text-sm">
+                {isDone && (
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                )}
+                {isActive && (
+                  <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
+                )}
+                {!isDone && !isActive && (
+                  <Circle className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                )}
+                <span
+                  className={cn(
+                    isDone && "text-muted-foreground line-through",
+                    isActive && "text-foreground font-medium",
+                    !isDone && !isActive && "text-muted-foreground"
+                  )}
+                >
+                  {step.label}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

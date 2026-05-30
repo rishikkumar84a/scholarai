@@ -5,12 +5,21 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Upload, File, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { AgentProgressBar, type AgentStep } from "@/components/AgentProgressBar";
+
+const SUMMARIZE_STEPS: AgentStep[] = [
+  { label: "Uploading PDF" },
+  { label: "Extracting text" },
+  { label: "Generating summary" },
+  { label: "Identifying key takeaways" },
+];
 
 export default function NewPaperPage() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [agentStep, setAgentStep] = useState(0);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -41,12 +50,16 @@ export default function NewPaperPage() {
   const handleSummarize = async () => {
     if (!file) return;
     setIsUploading(true);
-    
-    // Simulate API call to upload and summarize
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    
+    setAgentStep(0);
+
+    // Simulate multi-step agent progress
+    for (let i = 1; i <= SUMMARIZE_STEPS.length; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      setAgentStep(i);
+    }
+
     setIsUploading(false);
-    router.push("/papers/1"); // Push to a dummy summarized paper for now
+    router.push("/papers/1");
   };
 
   return (
@@ -132,6 +145,14 @@ export default function NewPaperPage() {
           </>
         )}
       </div>
+
+      {/* Agent progress — only visible while summarization is running */}
+      {isUploading && (
+        <AgentProgressBar
+          steps={SUMMARIZE_STEPS}
+          currentStep={agentStep}
+        />
+      )}
     </div>
   );
 }
