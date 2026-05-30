@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ScholarshipCard } from "@/components/ScholarshipCard";
+import { AgentProgressBar, type AgentStep } from "@/components/AgentProgressBar";
 import { Search, Filter } from "lucide-react";
 
 // Dummy data for initial UI
@@ -44,8 +45,17 @@ const DUMMY_SCHOLARSHIPS = [
   },
 ];
 
+const MATCH_STEPS: AgentStep[] = [
+  { label: "Loading your profile" },
+  { label: "Searching scholarship database" },
+  { label: "Scoring eligibility" },
+  { label: "Ranking results" },
+];
+
 export default function ScholarshipsPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMatching, setIsMatching] = useState(false);
+  const [matchStep, setMatchStep] = useState(0);
 
   const filtered = DUMMY_SCHOLARSHIPS.filter(
     (s) =>
@@ -91,6 +101,15 @@ export default function ScholarshipsPage() {
           </div>
         )}
       </div>
+
+      {/* Agent progress — only visible while matching is running */}
+      {isMatching && (
+        <AgentProgressBar
+          steps={MATCH_STEPS}
+          currentStep={matchStep}
+          onDismiss={() => setIsMatching(false)}
+        />
+      )}
     </div>
   );
 }

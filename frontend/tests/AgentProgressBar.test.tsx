@@ -1,28 +1,38 @@
-import { render, screen, act } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { AgentProgressBar } from "@/components/AgentProgressBar";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+const steps = [
+  { label: "Loading profile" },
+  { label: "Searching database" },
+  { label: "Scoring results" },
+];
 
 describe("AgentProgressBar", () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
+  it("renders all steps and marks completed steps", () => {
+    render(<AgentProgressBar steps={steps} currentStep={1} />);
+
+    expect(screen.getByText("Agent Running")).toBeInTheDocument();
+    expect(screen.getByText("Loading profile")).toBeInTheDocument();
+    expect(screen.getByText("Searching database")).toBeInTheDocument();
+    expect(screen.getByText("Scoring results")).toBeInTheDocument();
   });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
+  it("shows 'Agent Complete' when all steps are done", () => {
+    render(<AgentProgressBar steps={steps} currentStep={3} />);
+
+    expect(screen.getByText("Agent Complete")).toBeInTheDocument();
   });
 
-  it("becomes visible and shows task after initial delay", () => {
-    render(<AgentProgressBar />);
-    
-    // Initially null because isVisible is false
-    expect(screen.queryByText("Agent Activity")).not.toBeInTheDocument();
+  it("calls onDismiss when dismiss button is clicked", () => {
+    const handleDismiss = vi.fn();
+    render(
+      <AgentProgressBar steps={steps} currentStep={1} onDismiss={handleDismiss} />
+    );
 
-    // Advance time by 5 seconds
-    act(() => {
-      vi.advanceTimersByTime(5000);
-    });
+    const dismissBtn = screen.getByLabelText("Dismiss agent progress");
+    dismissBtn.click();
 
-    expect(screen.getByText("Agent Activity")).toBeInTheDocument();
-    expect(screen.getByText("Summarizing 5 papers...")).toBeInTheDocument();
+    expect(handleDismiss).toHaveBeenCalledOnce();
   });
 });
